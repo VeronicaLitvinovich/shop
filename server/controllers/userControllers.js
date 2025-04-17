@@ -1,11 +1,11 @@
 exports.getAllUsers = async (req, res, next) => {
-    res.send('Get all users route');
+    res.send('Get All Users Route');
 }
 
 exports.createNewUser = async (req, res, next) => {
-    res.send('Create new user route');
+    res.send('Create New User Route');
 }
 
 exports.getUserById = async (req, res, next) => {
-    res.send('Get user by id route');
+    res.send('Get User By Id Route');
 }
