@@ -7,7 +7,6 @@ const userRoutes = require('./routes/userRoutes');
 const PORT = process.env.PORT || 5001;
 const app = express();
 
-// Порядок middleware важен!
 app.use(cors({
     origin: 'http://localhost:3000',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
@@ -16,10 +15,8 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
-// Подключение роутов
 app.use('/users', userRoutes);
 
-// Обработчик ошибок должен быть последним
 app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500).json({
