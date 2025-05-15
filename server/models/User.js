@@ -1,7 +1,14 @@
 const db = require('../config/db');
 
 class User {
-    constructor(email, name, surname, phone_number, password, role = 'user') {
+    constructor(
+        email, 
+        name = null, 
+        surname = null, 
+        phone_number = null, 
+        password, 
+        role = 'user'
+    ) {
         this.email = email;
         this.name = name;
         this.surname = surname;
@@ -36,10 +43,36 @@ class User {
         return db.execute(sql);
     }
 
-    static findById(id) {
-        const sql = "SELECT * FROM users WHERE id = ?";
-        return db.execute(sql, [id]);
+    static findByEmail(email) {
+    const sql = "SELECT * FROM users WHERE BINARY email = ?"; // Учитываем регистр
+    return db.execute(sql, [email])
+        .then(([rows]) => {
+            console.log('DB Response:', rows); // Добавляем лог
+            return rows.length > 0 ? rows[0] : null;
+        });
     }
+
+    static async updateByEmail(email, updateData) {
+    try {
+        // Предполагаем, что у вас есть доступ к базе данных
+        const [result] = await db.query(
+            `UPDATE users SET name = ?, surname = ?, phone_number = ? WHERE email = ?`,
+            [updateData.name, updateData.surname, updateData.phone_number, email]
+        );
+
+        // Проверяем, обновлены ли строки
+        if (result.affectedRows === 0) {
+            return null; // Пользователь не найден
+        }
+
+        // Возвращаем обновленного пользователя (можно сделать отдельный запрос, если нужно вернуть все данные)
+        const [updatedUser] = await db.query(`SELECT * FROM users WHERE email = ?`, [email]);
+        return updatedUser[0];
+    } catch (error) {
+        console.error("Error updating user:", error);
+        throw error; // Пробрасываем ошибку дальше
+    }
+}
 }
 
 module.exports = User;

@@ -1,3 +1,4 @@
+const User = require('../models/User');
 const express = require('express');
 const router = express.Router();
 const userControllers = require('../controllers/userControllers');
@@ -6,31 +7,27 @@ router.route('/')
     .get(userControllers.getAllUsers)
     .post(userControllers.createNewUser);
 
-router.route('/:id')
-    .get(userControllers.getUserById);
+// В userRoutes.js убедитесь что роут объявлен как:
+router.route('/profile/:email')
+    .get(userControllers.getUserByEmail)
+    .put(userControllers.updateUserProfile)
 
-router.post('/auth/login', async (req, res) => {
+
+router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
-            
-        // Поиск пользователя
-        const user = await User.findOne({ email });
-        if (!user) return res.status(401).json({ error: "Invalid credentials" });
-    
-        // Проверка пароля
-        const validPassword = await bcrypt.compare(password, user.password);
-        if (!validPassword) return res.status(401).json({ error: "Invalid credentials" });
-    
-        // Генерация токена
-        const token = jwt.sign(
-            { userId: user._id }, 
-            process.env.JWT_SECRET, 
-            { expiresIn: '1h' }
-        );
+        // Получаем пользователя
+        const user = await User.findByEmail(email);
+        
+        // Проверка существования пользователя и совпадения пароля
+        if (!user || user.password !== password) {
+            return res.status(401).json({ error: "Invalid credentials" });
+        }
 
-        res.json({ token });
-            
+        res.json({ message: "Login successful!" });
+
     } catch (error) {
+        console.error("Login error:", error);
         res.status(500).json({ error: "Server error" });
     }
 });
