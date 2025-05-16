@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const userRoutes = require('./routes/userRoutes');
+const contentRoutes = require('./routes/contentRoutes');
 
 const PORT = process.env.PORT || 5001;
 const app = express();
@@ -16,6 +17,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use('/users', userRoutes);
+app.use('/content', contentRoutes);
 
 app.use((err, req, res, next) => {
     console.error(err.stack);

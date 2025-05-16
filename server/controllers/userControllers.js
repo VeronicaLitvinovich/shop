@@ -54,7 +54,7 @@ exports.getUserByEmail = async (req, res, next) => {
         
         const user = await User.findByEmail(userEmail);
         console.log('Found user:', user); // Лог результата поиска
-        
+        console.log(user.id)
         if (!user) {
             console.log('User not found in DB'); // Лог отсутствия пользователя
             return res.status(404).json({ error: "User not found" });
