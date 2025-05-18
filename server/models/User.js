@@ -72,6 +72,12 @@ class User {
         console.error("Error updating user:", error);
         throw error; // Пробрасываем ошибку дальше
     }
+    }
+
+    static async deleteByEmail(email) {
+    const sql = "DELETE FROM users WHERE email = ?";
+    const [result] = await db.execute(sql, [email]);
+    return result; // Return the result for checking affected rows
 }
 }
 

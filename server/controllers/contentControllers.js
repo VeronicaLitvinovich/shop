@@ -11,12 +11,13 @@ exports.getAllProducts = async (req, res, next) => {
     }
 };
 
+
 exports.createNewProduct = async (req, res, next) => {
     try {
-        const { name, description, category, color, image, quantity } = req.body;
+        const { name, description, category, color, quantity } = req.body;
+        const image = req.file ? req.file.buffer : null; // Получаем бинарные данные изображения
 
-        // Замена undefined на null для необязательных полей
-        const user = new Content(
+        const product = new Content(
             name,
             description,
             category,
@@ -34,5 +35,34 @@ exports.createNewProduct = async (req, res, next) => {
             error: "Internal server error",
             details: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
+    }
+};
+
+exports.getImage = async (req, res) => {
+    const productId = req.params.id;
+    const product = await Content.findById(productId); // Ensure this method fetches the product correctly
+
+    if (product && product.image) {
+        res.set('Content-Type', 'image/jpeg'); // Set appropriate content type
+        res.send(product.image); // Send the binary image data
+    } else {
+        res.status(404).send('Image not found');
+    }
+};
+
+exports.deleteProduct = async (req, res) => {
+    const productId = req.params.id;
+
+    try {
+        const result = await Content.deleteById(productId); // Ensure this method is defined in your Content model
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: "Product not found" });
+        }
+
+        res.status(204).send(); // Successfully deleted
+    } catch (error) {
+        console.error("Error deleting product:", error);
+        res.status(500).json({ error: "Internal server error" });
     }
 };

@@ -2,16 +2,19 @@ const Content = require('../models/Content');
 const express = require('express');
 const router = express.Router();
 const contentControllers = require('../controllers/contentControllers');
+const multer = require('multer');
+const upload = multer({ storage: multer.memoryStorage() }); // Хранение в памяти
 
 router.route('/')
     .get(contentControllers.getAllProducts)
-//     .post(contentControllers.createNewProduct);
-
-// router.route('/info/:id')
-//     .get(contentControllers.getProductById)
-//     .put(contentControllers.updateProductInfo)
 
 router.route('/addProduct')
-    .post(contentControllers.createNewProduct)
+    .post(upload.single('image'), contentControllers.createNewProduct);
+
+router.route('/image/:id').get(contentControllers.getImage);
+
+router.route('/:id')
+    .delete(contentControllers.deleteProduct); 
+
 
 module.exports = router;

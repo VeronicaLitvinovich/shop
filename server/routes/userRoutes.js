@@ -32,4 +32,19 @@ router.post('/login', async (req, res) => {
     }
 });
 
+router.delete('/:email', async (req, res) => {
+    const userEmail = req.params.email;
+
+    try {
+        const result = await User.deleteByEmail(userEmail); // Implement this method in your User model
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: "User not found" });
+        }
+        res.status(204).send(); // Successfully deleted
+    } catch (error) {
+        console.error("Error deleting user:", error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+});
+
 module.exports = router;
